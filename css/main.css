@@ -1,11 +1,39 @@
-.board-container{
-
+*{
+    font-family: 'PT Sans', sans-serif;
+    font-size: 14px;
 }
 
+.level-btns{
+    text-align: center;
+}
+.level-btns h3{
+    font-size:30px;
+}
+.level-btns span{
+    font-size:30px;
+    color:red;
+}
+.level-btns button{
+    border:1px solid orange;
+    color:orange;
+    background-color: transparent;
+    width:90px;
+    height:20px;
+    border-radius:2px;
+    cursor: pointer;
+    transition: 0.3s;
+    outline: none;
+    font-size:12px;
+}
+.level-btns button:hover{
+    border:1px solid orange;
+    color:white;
+    background-color: orange;
+}
 
 .cell{
-    width:30px;
-    height:30px;
+    width:40px;
+    height:40px;
     text-align: center;
     font-size:10px;
 }
@@ -13,11 +41,13 @@
 /* #cell-101 span{
     display:none;
 } */
+
 .cell:hover{
     background-color: rgb(238, 238, 238);
 }
 table,td{
     border-collapse: collapse;
-    border:1px solid black;
-
+    border:1px solid rgb(202, 202, 202);
+    margin:0 auto;
+    margin-top:40px; 
 }
