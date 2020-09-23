@@ -1,0 +1,23 @@
+.board-container{
+
+}
+
+
+.cell{
+    width:30px;
+    height:30px;
+    text-align: center;
+    font-size:10px;
+}
+
+/* #cell-101 span{
+    display:none;
+} */
+.cell:hover{
+    background-color: rgb(238, 238, 238);
+}
+table,td{
+    border-collapse: collapse;
+    border:1px solid black;
+
+}
