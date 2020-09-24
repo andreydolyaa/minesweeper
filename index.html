@@ -1,22 +1,31 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper</title>
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 </head>
+
 <body onload="initGame()">
     <div class="level-btns">
         <h3>mine<span>sweeper</span>💥</h3>
-        <button id="4" onclick="setLevel(this.id)">• Easy •</button>
-        <button id="8" onclick="setLevel(this.id)">• Medium •</button>
-        <button id="12" onclick="setLevel(this.id)">• Expert •</button>
+        <button id="4" onclick="setLevel(this.id)">Easy</button>
+        <button id="8" onclick="setLevel(this.id)">Medium</button>
+        <button id="12" onclick="setLevel(this.id)">Expert</button>
+        <div class="timer-lives">
+            <div class="lives"></div>
+            <div class="smiley"></div>
+            <div class="timer"></div>
+        </div>
     </div>
     <div class="board-container">
-
     </div>
+    <div class="msg"></div>
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>
+<!-- 💗💗💗 -->
