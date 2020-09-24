@@ -350,7 +350,7 @@ function showLives() {
     if (gLives === 3) return '💗💗💗';
     if (gLives === 2) return '💗💗';
     if (gLives === 1) return '💗';
-    if (gLives === 0) return 'no lives left 💀';
+    if (gLives === 0) return '0 Lives';
 }
 
 
