@@ -42,17 +42,6 @@ function initGame() {
 }
 
 
-function getData() {
-    console.log('/////////////////////////////////////');
-    console.log('gGame.markedCount:', gGame.markedCount);
-    console.log('gLevel.mines:', gLevel.mines);
-    console.log('gGame.showCount:', gGame.showCount);
-    console.log('gBoard.length:', gBoard.length ** 2);
-    console.log('gGame.isOn: ', gGame.isOn);
-    console.log('/////////////////////////////////////');
-}
-
-
 function buildBoard() {
     var SIZE = gLevel.size;
     var board = [];
@@ -85,8 +74,6 @@ function renderBoard(board) {
         strHTML += '<tr>'
         for (var j = 0; j < board[i].length; j++) {
             var currCell = board[i][j];
-
-
             if (currCell.isMine === true) {
                 var mine = MINE;
                 strHTML += `<td class="cell" id="cell-${currCell.id}" oncontextmenu="cellMarked(this.id);return false"
@@ -96,16 +83,15 @@ function renderBoard(board) {
                 strHTML += `<td class="cell" id="cell-${currCell.id}" oncontextmenu="cellMarked(this.id);return false" 
                 onclick="cellClicked(this.id)"><span>${currCell.minesAroundCount = setMinesNegsCount(board, i, j)}</span></td>`
             }
-
         }
         strHTML += `</tr>`;
     }
-
     strHTML += `</tbody></table>`;
     var elBoard = document.querySelector('.board-container');
     elBoard.innerHTML = strHTML;
     hideAllCells();
 }
+
 
 
 function cellMarked(elCell) {
@@ -123,6 +109,7 @@ function cellMarked(elCell) {
                     cellNotSpan.style.backgroundColor = '#E8F5FF'
                     gBoard[i][j].isMarked = true;
                     gGame.markedCount++;
+                    checkIfWon();
                 } else {
                     gBoard[i][j].isMarked = false;
                     flagToggle(i, j);
@@ -180,6 +167,7 @@ function cellClicked(elCell) {
                 revealCell(id);
                 gBoard[i][j].isShowen = true;
                 checkIfWon();
+                numColors(i, j);
                 getData();
             }
         }
@@ -211,6 +199,7 @@ function revealCell(id) {
 }
 
 
+
 function expendShowen(board, posI, posJ) {
     for (var i = posI - 1; i <= posI + 1; i++) {
         if (i < 0 || i >= board.length) continue;
@@ -219,15 +208,14 @@ function expendShowen(board, posI, posJ) {
             board[i][j].isShowen = true;
             var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
             var cellNotSpan = document.querySelector(`#cell-${gBoard[i][j].id}`);
-            if (cell.style.display === 'none') {
-                gGame.showCount++;
-            }
             if (cell.innerText === '0') {
                 cell.innerText = '';
+                expendShowen(board, i, j);
             }
             cell.style.display = 'block';
             cellNotSpan.style.backgroundColor = '#E8F5FF';
             cellNotSpan.style.border = 'none';
+            numColors(i, j)
         }
     }
 }
@@ -272,7 +260,6 @@ function checkGameOver() {
                     var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
                     var livesMsg = document.querySelector('.lives');
                     livesMsg.innerText = showLives();
-                    console.log(gLives);
                     var mineExplore = setTimeout(function () {
                         cell.style.display = 'none';
                         cellBgc.style.backgroundColor = 'white'
@@ -306,7 +293,9 @@ function checkGameOver() {
 
 
 function checkIfWon() {
-    if (gBoard.length ** 2 === gGame.showCount + gGame.markedCount) {
+    var showenCount = getShowenCells();
+    var livesUsed = 3 - gLives;
+    if (showenCount - livesUsed === (gBoard.length ** 2) - (gLevel.mines) && gGame.markedCount === gLevel.mines) {
         var msg = document.querySelector('.msg');
         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
         var smiley = document.querySelector('.smiley');
@@ -328,6 +317,7 @@ function resetDOM() {
     var smiley = document.querySelector('.smiley');
     smiley.innerHTML = '😊';
 }
+
 
 
 function setMinesNegsCount(board, posI, posJ) {
@@ -361,6 +351,50 @@ function timer() {
         elTimer.innerHTML = 'Time: ' + gTime++ + 's';
     }
 }
+
+function getShowenCells() {
+    var count = 0;
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            if (gBoard[i][j].isShowen === true) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+
+
+function numColors(i, j) {
+    var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+    if (cell.innerText === '1') cell.style.color = 'blue';
+    if (cell.innerText === '2') cell.style.color = 'green';
+    if (cell.innerText === '3') cell.style.color = 'red';
+    if (cell.innerText === '4') cell.style.color = 'purple';
+    if (cell.innerText === '5') cell.style.color = 'maroon';
+    if (cell.innerText === '6') cell.style.color = 'turquoise';
+}
+
+
+function getData() {
+    console.log('/////////////////////////////////////');
+    console.log('gGame.markedCount:', gGame.markedCount);
+    console.log('gLevel.mines:', gLevel.mines);
+    console.log('gGame.showCount:', gGame.showCount, 'getShwoenCells():');
+    console.log('gBoard.length:', gBoard.length ** 2);
+    console.log('gGame.isOn: ', gGame.isOn);
+    console.log('/////////////////////////////////////');
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -406,3 +440,74 @@ function timer() {
 //     }
 // }
 
+// function test(board, posI, posJ) {
+//     if (board[posI][posJ].minesAroundCount === 0) {
+//         for (var i = posI - 1; i <= posI + 1; i++) {
+//             if (i < 0 || i >= board.length) continue;
+//             for (var j = posJ - 1; j <= posJ + 1; j++) {
+//                 if (j < 0 || j >= board.length) continue;
+//                 board[i][j].isShowen = true;
+//                 var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+//                 var cellNotSpan = document.querySelector(`#cell-${gBoard[i][j].id}`);
+//                 if (cell.style.display === 'none') {
+//                     gGame.showCount++;
+//                 }
+//                 if (cell.innerText === '0') {
+//                     cell.innerText = '';
+//                     test(board, i, j)
+//                 }
+//                 cell.style.display = 'block';
+//                 cellNotSpan.style.backgroundColor = '#E8F5FF';
+//                 cellNotSpan.style.border = 'none';
+//             }
+//         }
+//     }
+// }
+// function expendShowen(board, posI, posJ) {
+//     for (var i = posI - 1; i <= posI + 1; i++) {
+//         if (i < 0 || i >= board.length) continue;
+//         for (var j = posJ - 1; j <= posJ + 1; j++) {
+//             if (j < 0 || j >= board.length) continue;
+//             board[i][j].isShowen = true;
+//             var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+//             var cellNotSpan = document.querySelector(`#cell-${gBoard[i][j].id}`);
+//             if (cell.style.display === 'none') {
+//                 gGame.showCount++;
+//             }
+//             if (cell.innerText === '0') {
+//                 cell.innerText = '';
+//             }
+//             cell.style.display = 'block';
+//             cellNotSpan.style.backgroundColor = '#E8F5FF';
+//             cellNotSpan.style.border = 'none';
+//         }
+//     }
+// }
+// var msg = document.querySelector('.msg');
+//         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
+//         var smiley = document.querySelector('.smiley');
+//         smiley.innerHTML = '😎';
+//         gGame.isOn = false;
+//         clearInterval(gTimerInterval);
+// function checkIfWon() {
+//     var showenCount = 0;
+//     var flagCount = 0
+//     var mineCount = 0;
+//     var livesUsed = 3 - gLives;
+//     var boardSize = gBoard.length ** 2;
+//     for (var i = 0; i < gBoard.length; i++) {
+//         for (var j = 0; j < gBoard[i].length; j++) {
+//             if (gBoard[i][j].isShowen === true) showenCount++;
+//             if (gBoard[i][j].isMarked === true) flagCount++;
+//             if (gBoard[i][j].isMine === true) mineCount++;
+//         }
+//     }
+//     if (flagCount === mineCount && mineCount === gLevel.mines && showenCount - livesUsed === (boardSize) - (gLevel.mines)) {
+//         var msg = document.querySelector('.msg');
+//         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
+//         var smiley = document.querySelector('.smiley');
+//         smiley.innerHTML = '😎';
+//         gGame.isOn = false;
+//         clearInterval(gTimerInterval);
+//     }
+// }
