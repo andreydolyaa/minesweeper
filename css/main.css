@@ -1,5 +1,5 @@
 *{
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Roboto Slab', serif;
     font-size: 14px;
 }
 
@@ -24,6 +24,7 @@
     transition: 0.3s;
     outline: none;
     font-size:12px;
+    
 }
 .level-btns button:hover{
     border:1px solid rgb(255, 94, 0);
@@ -32,10 +33,11 @@
 }
 
 .cell{
-    width:30px;
-    height:30px;
+    width:25px;
+    height:25px;
     text-align: center;
     font-size:10px;
+    cursor: pointer;
 }
 
 /* #cell-101 span{
@@ -45,13 +47,15 @@
 .cell:hover{
     background-color: rgb(238, 238, 238);
 }
-table,td{
+td,table{
     border-collapse: collapse;
-    border:1px solid rgb(214, 214, 214);
+    border:1px solid rgb(233, 233, 233);
     margin:0 auto;
     margin-top:20px; 
     font-weight: 600;
+    box-shadow: 0px 0px 15px #f0f0f0
 }
+
 
 .msg{
     text-align: center;

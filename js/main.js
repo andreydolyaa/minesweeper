@@ -3,8 +3,9 @@
 
 var MINE = '💣';
 var FLAG = '🚩';
-var EMPTY = '';
 
+
+var gMineDeleted;
 var gTime;
 var gTimerInterval;
 var gLives;
@@ -29,6 +30,7 @@ var gGame = {
 
 
 function initGame() {
+    gMineDeleted = 0;
     gTime = 0;
     gLives = 3;
     gGame.showCount = 0;
@@ -62,7 +64,6 @@ function buildBoard() {
     // board[1][1].isMine = true;
     // board[2][2].isMine = true;
     // board[3][3].isMine = true;
-    // board[3][2].isMine = true;
     createMines(board);
     return board;
 }
@@ -78,8 +79,7 @@ function renderBoard(board) {
                 var mine = MINE;
                 strHTML += `<td class="cell" id="cell-${currCell.id}" oncontextmenu="cellMarked(this.id);return false"
                  onclick="cellClicked(this.id)"><span>${mine}</span></td>`
-            }
-            else {
+            } else {
                 strHTML += `<td class="cell" id="cell-${currCell.id}" oncontextmenu="cellMarked(this.id);return false" 
                 onclick="cellClicked(this.id)"><span>${currCell.minesAroundCount = setMinesNegsCount(board, i, j)}</span></td>`
             }
@@ -163,6 +163,14 @@ function cellClicked(elCell) {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
             if (gBoard[i][j].id === +id) {
+                if (gGame.showCount === 0 && gBoard[i][j].isMine) {
+                    gBoard[i][j].isMine = false;
+                    gMineDeleted++;
+                    var smiley = document.querySelector('.smiley');
+                    smiley.innerHTML = '😊';
+                    renderBoard(gBoard)
+                }
+                gGame.showCount++;
                 gPosition = { i: i, j: j };
                 revealCell(id);
                 gBoard[i][j].isShowen = true;
@@ -177,7 +185,6 @@ function cellClicked(elCell) {
 
 
 function revealCell(id) {
-    var currIdx = gBoard[gPosition.i][gPosition.j];
     var cell = document.querySelector(`#cell-${id} span`);
     var cellNotSpan = document.querySelector(`#cell-${id}`);
     if (cell.innerText !== '0') {
@@ -263,6 +270,7 @@ function checkGameOver() {
                     var mineExplore = setTimeout(function () {
                         cell.style.display = 'none';
                         cellBgc.style.backgroundColor = 'white'
+                        cellBgc.style.border = '1px solid #e9e9e9';
                         var smiley = document.querySelector('.smiley');
                         smiley.innerHTML = '🤯';
                     }, 1000);
@@ -279,6 +287,7 @@ function checkGameOver() {
                     var msg = document.querySelector('.msg');
                     cell.style.display = 'block';
                     cellBgc.style.backgroundColor = '#FF7D7D';
+                    cellBgc.style.border = 'none';
                     msg.innerHTML = `<h1>Game over</h1><button onclick="initGame()">restart</button>`;
                     var smiley = document.querySelector('.smiley');
                     smiley.innerHTML = '🤯';
@@ -295,14 +304,16 @@ function checkGameOver() {
 function checkIfWon() {
     var showenCount = getShowenCells();
     var livesUsed = 3 - gLives;
-    if (showenCount - livesUsed === (gBoard.length ** 2) - (gLevel.mines) && gGame.markedCount === gLevel.mines) {
+    if (showenCount - livesUsed === (gBoard.length ** 2) - (gLevel.mines - gMineDeleted) &&
+        gGame.markedCount === (gLevel.mines - gMineDeleted)) {
+
         var msg = document.querySelector('.msg');
         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
         var smiley = document.querySelector('.smiley');
         smiley.innerHTML = '😎';
         gGame.isOn = false;
-        clearInterval(gTimerInterval);
     }
+    clearInterval(gTimerInterval)
 }
 
 
@@ -381,7 +392,7 @@ function getData() {
     console.log('/////////////////////////////////////');
     console.log('gGame.markedCount:', gGame.markedCount);
     console.log('gLevel.mines:', gLevel.mines);
-    console.log('gGame.showCount:', gGame.showCount, 'getShwoenCells():');
+    console.log('gGame.showCount:', gGame.showCount, 'getShwoenCells():', getShowenCells());
     console.log('gBoard.length:', gBoard.length ** 2);
     console.log('gGame.isOn: ', gGame.isOn);
     console.log('/////////////////////////////////////');
