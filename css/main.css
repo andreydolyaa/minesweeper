@@ -53,7 +53,7 @@ td,table{
     margin:0 auto;
     margin-top:20px; 
     font-weight: 600;
-    box-shadow: 0px 0px 15px #f0f0f0
+    box-shadow: 0px 0px 15px #f0f0f0;
 }
 
 
@@ -105,7 +105,18 @@ td,table{
     font-size: 16px;
     font-weight: 600;
 }
-
+.bulb-light{
+    text-shadow: 0px 0px 10px rgb(255, 0, 0);
+}
+.bulb{
+    width:100px;
+    margin:0 auto;
+    display:flex;
+    justify-content: space-evenly;
+    text-align: center;
+    margin-top:20px;
+    cursor: pointer;
+}
 
 
 

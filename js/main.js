@@ -14,7 +14,7 @@ var gPosition = {
     i: 0,
     j: 0
 };
-var gCellId = 101;
+var gCellId;
 var gBoard;
 var gLevel = {
     size: 4,
@@ -30,6 +30,7 @@ var gGame = {
 
 
 function initGame() {
+    gCellId = 101;
     gMineDeleted = 0;
     gTime = 0;
     gLives = 3;
@@ -172,15 +173,14 @@ function cellClicked(elCell) {
                 }
                 gGame.showCount++;
                 gPosition = { i: i, j: j };
-                revealCell(id);
+
                 gBoard[i][j].isShowen = true;
+                revealCell(id);
                 checkIfWon();
                 numColors(i, j);
-                getData();
             }
         }
     }
-    return null;
 }
 
 
@@ -205,8 +205,8 @@ function revealCell(id) {
     }
 }
 
-
-
+// cellNotSpan.style.backgroundColor = '#FDF5E6';
+// cellNotSpan.style.backgroundColor = '#E8F5FF';
 function expendShowen(board, posI, posJ) {
     for (var i = posI - 1; i <= posI + 1; i++) {
         if (i < 0 || i >= board.length) continue;
@@ -251,6 +251,10 @@ function setLevel(id) {
         gLevel.size = 12;
         gLevel.mines = 30;
     }
+    if (+id === 24) {
+        gLevel.size = 24;
+        gLevel.mines = 90;
+    }
     initGame();
     clearInterval(gTimerInterval)
 }
@@ -285,6 +289,7 @@ function checkGameOver() {
                     var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
                     var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
                     var msg = document.querySelector('.msg');
+                    gGame.isOn = false;
                     cell.style.display = 'block';
                     cellBgc.style.backgroundColor = '#FF7D7D';
                     cellBgc.style.border = 'none';
@@ -292,7 +297,6 @@ function checkGameOver() {
                     var smiley = document.querySelector('.smiley');
                     smiley.innerHTML = '🤯';
                     clearTimeout(mineExplore);
-                    gGame.isOn = false;
                     clearInterval(gTimerInterval);
                 }
             }
@@ -401,6 +405,10 @@ function getData() {
 
 
 
+function getHint(idBtn,idCell) {
+    var elHint = document.querySelector(`#${idBtn}`);
+    elHint.classList.add('bulb-light');
+}
 
 
 
@@ -408,8 +416,8 @@ function getData() {
 
 
 
-
-
+// cellNotSpan.style.backgroundColor = '#FDF5E6';
+// cellNotSpan.style.backgroundColor = '#E8F5FF';
 // if (cell.style.display === 'none') {
 //     gGame.showCount++;
 // }

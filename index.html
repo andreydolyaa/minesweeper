@@ -14,13 +14,21 @@
         <button id="4" onclick="setLevel(this.id)">Easy</button>
         <button id="8" onclick="setLevel(this.id)">Medium</button>
         <button id="12" onclick="setLevel(this.id)">Expert</button>
-        <div class="timer-lives">
-            <div class="lives"></div>
-            <div class="smiley"></div>
-            <div class="timer"></div>
-        </div>
+        <button id="24" onclick="setLevel(this.id)">Insane!</button>
+        <button onclick="initGame()">Restart</button>
+    </div>
+    <div class="timer-lives">
+        <div class="lives"></div>
+        <div class="smiley"></div>
+        <div class="timer"></div>
+    </div>
     </div>
     <div class="board-container">
+    </div>
+    <div class="bulb">
+        <div id="hint1" onclick="getHint(this.id)">💡</div>
+        <div id="hint2" onclick="getHint(this.id)">💡</div>
+        <div id="hint3" onclick="getHint(this.id)">💡</div>
     </div>
     <div class="msg"></div>
     <script src="js/utils.js"></script>
