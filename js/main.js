@@ -21,8 +21,8 @@ var gPosition = {
 var gCellId;
 var gBoard;
 var gLevel = {
-    size: 4,
-    mines: 2
+    size: 8,
+    mines: 12
 };
 var gGame = {
     isOn: false,
@@ -31,8 +31,7 @@ var gGame = {
     secsPassed: 0
 };
 
-//who ever is viewing this, i know i should've use classList/add/remove for the styling,
-//instead of doing it inside the js, but i realized it only at the end, sorry for the mess 
+
 
 function initGame() {
     clearTimeout(gHintTimeout);
@@ -97,6 +96,7 @@ function renderBoard(board) {
     elBoard.innerHTML = strHTML;
     hideAllCells();
 }
+
 
 
 
@@ -187,6 +187,7 @@ function cellClicked(elCell) {
                     revealCell(id);
                     checkIfWon();
                     numColors(i, j);
+                    getData();
                 }
             }
         }
@@ -241,11 +242,14 @@ function expendShowen(board, posI, posJ) {
 
 function createMines(board) {
     var count = 0;
-    while (count !== gLevel.mines) {
+    while (gLevel.mines !== count) {
         board[getRandomIntInclusive(0, board.length - 1)][getRandomIntInclusive(0, board.length - 1)].isMine = true;
         count++;
     }
 }
+
+
+
 
 
 function setLevel(id) {
@@ -317,10 +321,9 @@ function checkGameOver() {
 
 function checkIfWon() {
     var showenCount = getShowenCells();
+    var minesCount = getMinesCount();
     var livesUsed = 3 - gLives;
-    if (showenCount - livesUsed === (gBoard.length ** 2) - (gLevel.mines - gMineDeleted) &&
-        gGame.markedCount === (gLevel.mines - gMineDeleted)) {
-
+    if (showenCount - livesUsed === (gBoard.length ** 2) - minesCount && gGame.markedCount === minesCount) {
         var msg = document.querySelector('.msg');
         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
         var smiley = document.querySelector('.smiley');
@@ -424,6 +427,17 @@ function timer() {
     }
 }
 
+function getMinesCount() {
+    var count = 0;
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            if (gBoard[i][j].isMine === true) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
 function getShowenCells() {
     var count = 0;
     for (var i = 0; i < gBoard.length; i++) {
@@ -478,16 +492,12 @@ function numColors(i, j) {
 function getData() {
     console.log('/////////////////////////////////////');
     console.log('gGame.markedCount:', gGame.markedCount);
-    console.log('gLevel.mines:', gLevel.mines);
+    console.log('gLevel.mines:', gLevel.mines, 'getMinesCount():', getMinesCount());
     console.log('gGame.showCount:', gGame.showCount, 'getShwoenCells():', getShowenCells());
     console.log('gBoard.length:', gBoard.length ** 2);
     console.log('gGame.isOn: ', gGame.isOn);
     console.log('/////////////////////////////////////');
 }
-
-
-
-
 
 
 
