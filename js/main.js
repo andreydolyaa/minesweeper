@@ -34,6 +34,7 @@ var gGame = {
 
 
 function initGame() {
+    clearInterval(gTimerInterval);
     clearTimeout(gHintTimeout);
     clearTimeout(gMineRevealTimeout);
     gRevealMine = 3;
@@ -48,7 +49,6 @@ function initGame() {
     gBoard = buildBoard();
     createMines(gBoard);
     renderBoard(gBoard);
-    gTimerInterval = setInterval(timer, 1000);
     checkGameOver();
 }
 
@@ -100,6 +100,7 @@ function renderBoard(board) {
 
 
 function cellMarked(elCell) {
+    gTimerInterval = setInterval(timer, 1000);
     gToggle = gBoard.slice();
     var id = elCell.slice(5, 8);
     for (var i = 0; i < gBoard.length; i++) {
@@ -271,7 +272,6 @@ function setLevel(id) {
         gLevel.mines = 90;
     }
     initGame();
-    clearInterval(gTimerInterval)
 }
 
 
