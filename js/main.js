@@ -4,12 +4,12 @@
 var MINE = '💣';
 var FLAG = '🚩';
 
+
 var gHintId;
 var gHintTimeout;
 var gIsHintOn;
 var gMineRevealTimeout;
 var gRevealMine;
-var gMineDeleted;
 var gTime;
 var gTimerInterval;
 var gLives;
@@ -21,8 +21,8 @@ var gPosition = {
 var gCellId;
 var gBoard;
 var gLevel = {
-    size: 8,
-    mines: 12
+    size: 4,
+    mines: 2
 };
 var gGame = {
     isOn: false,
@@ -39,7 +39,6 @@ function initGame() {
     gRevealMine = 3;
     gIsHintOn = false;
     gCellId = 101;
-    gMineDeleted = 0;
     gTime = 0;
     gLives = 3;
     gGame.showCount = 0;
@@ -47,6 +46,7 @@ function initGame() {
     gGame.isOn = true;
     resetDOM();
     gBoard = buildBoard();
+    createMines(gBoard);
     renderBoard(gBoard);
     gTimerInterval = setInterval(timer, 1000);
     checkGameOver();
@@ -69,7 +69,6 @@ function buildBoard() {
             board[i][j] = cell;
         }
     }
-    createMines(board);
     return board;
 }
 
@@ -172,7 +171,7 @@ function cellClicked(elCell) {
                 gPosition = { i: i, j: j };
                 if (gGame.showCount === 0 && gBoard[i][j].isMine) {
                     gBoard[i][j].isMine = false;
-                    gMineDeleted++;
+                    gBoard[getRandomIntInclusive(0, gBoard.length - 1)][getRandomIntInclusive(0, gBoard.length - 1)].isMine = true;
                     var smiley = document.querySelector('.smiley');
                     smiley.innerHTML = '😊';
                     renderBoard(gBoard)
@@ -187,7 +186,6 @@ function cellClicked(elCell) {
                     revealCell(id);
                     checkIfWon();
                     numColors(i, j);
-                    getData();
                 }
             }
         }
@@ -242,14 +240,17 @@ function expendShowen(board, posI, posJ) {
 
 function createMines(board) {
     var count = 0;
-    while (gLevel.mines !== count) {
-        board[getRandomIntInclusive(0, board.length - 1)][getRandomIntInclusive(0, board.length - 1)].isMine = true;
-        count++;
+    while (count !== gLevel.mines) {
+        var posI = getRandomIntInclusive(0, board.length - 1);
+        var posJ = getRandomIntInclusive(0, board.length - 1);
+        if (board[posI][posJ].isMine === false) {
+            board[posI][posJ].isMine = true;
+            count++;
+        } else {
+            continue;
+        }
     }
 }
-
-
-
 
 
 function setLevel(id) {
@@ -321,9 +322,8 @@ function checkGameOver() {
 
 function checkIfWon() {
     var showenCount = getShowenCells();
-    var minesCount = getMinesCount();
     var livesUsed = 3 - gLives;
-    if (showenCount - livesUsed === (gBoard.length ** 2) - minesCount && gGame.markedCount === minesCount) {
+    if (showenCount - livesUsed === (gBoard.length ** 2) - gLevel.mines && gGame.markedCount === gLevel.mines) {
         var msg = document.querySelector('.msg');
         msg.innerHTML = `<h1>VICTORY!🥇</h1><button onclick="initGame()">play again</button>`;
         var smiley = document.querySelector('.smiley');
@@ -351,27 +351,24 @@ function setMinesNegsCount(board, posI, posJ) {
 }
 
 
+
 function revealMine() {
-    if (gRevealMine !== 0) {
-        for (var i = getRandomIntInclusive(0, gBoard.length - 1); i < gBoard.length; i++) {
-            for (var j = getRandomIntInclusive(0, gBoard.length - 1); j < gBoard[i].length; j++) {
-                if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
-                    var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
-                    var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
-                    cell.style.display = 'block';
-                    gMineRevealTimeout = setTimeout(function () {
-                        cell.style.display = 'none';
-                        cellBgc.style.backgroundColor = 'white'
-                        cellBgc.style.border = '1px solid #e9e9e9';
-                    }, 1000);
-                    gRevealMine--;
-                    var safeClick = document.querySelector('.safe-click button');
-                    safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
-                    return;
-                }
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            var posI = getRandomIntInclusive(0,gBoard.length-1);
+            var posJ = getRandomIntInclusive(0,gBoard.length-1);
+            if (gBoard[posI][posJ].isMine && !gBoard[posI][posJ].isMarked && gRevealMine !== 0) {
+                var cell = document.querySelector(`#cell-${gBoard[posI][posJ].id} span`);
+                cell.style.display = 'block';
+                setTimeout(function () {
+                    cell.style.display = 'none';
+                }, 1000);
+                gRevealMine--;
+                var safeClick = document.querySelector('.safe-click button');
+                safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
+                return;
             }
         }
-        clearTimeout(gMineRevealTimeout);
     }
 }
 
@@ -427,17 +424,7 @@ function timer() {
     }
 }
 
-function getMinesCount() {
-    var count = 0;
-    for (var i = 0; i < gBoard.length; i++) {
-        for (var j = 0; j < gBoard[i].length; j++) {
-            if (gBoard[i][j].isMine === true) {
-                count++;
-            }
-        }
-    }
-    return count;
-}
+
 function getShowenCells() {
     var count = 0;
     for (var i = 0; i < gBoard.length; i++) {
@@ -492,7 +479,7 @@ function numColors(i, j) {
 function getData() {
     console.log('/////////////////////////////////////');
     console.log('gGame.markedCount:', gGame.markedCount);
-    console.log('gLevel.mines:', gLevel.mines, 'getMinesCount():', getMinesCount());
+    console.log('gLevel.mines:', gLevel.mines, 'getMinesCount():');
     console.log('gGame.showCount:', gGame.showCount, 'getShwoenCells():', getShowenCells());
     console.log('gBoard.length:', gBoard.length ** 2);
     console.log('gGame.isOn: ', gGame.isOn);
@@ -505,7 +492,13 @@ function getData() {
 
 
 
-
+// function createMines(board) {
+//     var count = 0;
+//     while (gLevel.mines !== count) {
+//         board[getRandomIntInclusive(0, board.length - 1)][getRandomIntInclusive(0, board.length - 1)].isMine = true;
+//         count++;
+//     }
+// }
 // function revelHintCells(id, board, posI, posJ) {
 //     var cell = document.querySelector(`#cell-${id} span`);
 //     var cellNotSpan = document.querySelector(`#cell-${id}`);
@@ -682,3 +675,24 @@ function getData() {
 //         clearInterval(gTimerInterval);
 //     }
 // }
+// function revealMine() {
+//     if (gRevealMine > 0) {
+//         for (var i = getRandomIntInclusive(0, gBoard.length - 1); i < gBoard.length; i++) {
+//             for (var j = getRandomIntInclusive(0, gBoard.length - 1); j < gBoard[i].length; j++) {
+//                 if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
+//                     var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+//                     var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
+//                     cell.style.display = 'block';
+//                     gMineRevealTimeout = setTimeout(function () {
+//                         cell.style.display = 'none';
+//                         cellBgc.style.backgroundColor = 'white'
+//                         cellBgc.style.border = '1px solid #e9e9e9';
+//                     }, 500);
+//                     gRevealMine--;
+//                     var safeClick = document.querySelector('.safe-click button');
+//                     safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
+//                     return;
+//                 }
+//             }
+//         }
+//     }
