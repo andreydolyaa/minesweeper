@@ -4,8 +4,8 @@
 var MINE = '💣';
 var FLAG = '🚩';
 
-
-var gHintInterval;
+var gHintId;
+var gHintTimeout;
 var gIsHintOn;
 var gMineRevealTimeout;
 var gRevealMine;
@@ -34,6 +34,7 @@ var gGame = {
 
 
 function initGame() {
+    clearTimeout(gHintTimeout);
     clearTimeout(gMineRevealTimeout);
     gRevealMine = 3;
     gIsHintOn = false;
@@ -171,6 +172,7 @@ function cellClicked(elCell) {
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
             if (gBoard[i][j].id === +id) {
+                gPosition = { i: i, j: j };
                 if (gGame.showCount === 0 && gBoard[i][j].isMine) {
                     gBoard[i][j].isMine = false;
                     gMineDeleted++;
@@ -178,17 +180,21 @@ function cellClicked(elCell) {
                     smiley.innerHTML = '😊';
                     renderBoard(gBoard)
                 }
-                gGame.showCount++;
-                gPosition = { i: i, j: j };
-                gBoard[i][j].isShowen = true;
-                revealCell(id);
-                checkIfWon();
-                numColors(i, j);
+                if (gIsHintOn === true) {
+                    revelHintCells(id, i, j);
+                    gIsHintOn = false;
+                } else {
+                    gGame.showCount++;
+                    gPosition = { i: i, j: j };
+                    gBoard[i][j].isShowen = true;
+                    revealCell(id);
+                    checkIfWon();
+                    numColors(i, j);
+                }
             }
         }
     }
 }
-
 
 
 
@@ -329,21 +335,6 @@ function checkIfWon() {
 
 
 
-function resetDOM() {
-    var msg = document.querySelector('.msg');
-    msg.innerHTML = '';
-    var livesMsg = document.querySelector('.lives');
-    livesMsg.innerText = showLives();
-    var elTimer = document.querySelector('.timer');
-    elTimer.innerHTML = 'Time: 0s';
-    var smiley = document.querySelector('.smiley');
-    smiley.innerHTML = '😊';
-    var safeClick = document.querySelector('.safe-click button');
-    safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
-}
-
-
-
 function setMinesNegsCount(board, posI, posJ) {
     var count = 0;
     for (var i = posI - 1; i <= posI + 1; i++) {
@@ -358,6 +349,63 @@ function setMinesNegsCount(board, posI, posJ) {
     }
     return count;
 }
+
+
+function revealMine() {
+    if (gRevealMine !== 0) {
+        for (var i = getRandomIntInclusive(0, gBoard.length - 1); i < gBoard.length; i++) {
+            for (var j = getRandomIntInclusive(0, gBoard.length - 1); j < gBoard[i].length; j++) {
+                if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
+                    var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+                    var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
+                    cell.style.display = 'block';
+                    gMineRevealTimeout = setTimeout(function () {
+                        cell.style.display = 'none';
+                        cellBgc.style.backgroundColor = 'white'
+                        cellBgc.style.border = '1px solid #e9e9e9';
+                    }, 1000);
+                    gRevealMine--;
+                    var safeClick = document.querySelector('.safe-click button');
+                    safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
+                    return;
+                }
+            }
+        }
+        clearTimeout(gMineRevealTimeout);
+    }
+}
+
+
+
+function setHintOn(idBtn) {
+    var elHint = document.querySelector(`#${idBtn}`);
+    if (elHint.classList.contains('bulb-light')) {
+        elHint.classList.remove('bulb-light');
+        gIsHintOn = false;
+    } else {
+        elHint.classList.add('bulb-light');
+        gIsHintOn = true;
+        gHintId = idBtn;
+    }
+}
+
+
+
+//works only with 1 cell 
+function revelHintCells(id,i,j) {
+    var cell = document.querySelector(`#cell-${id} span`);
+    cell.style.display = 'block';
+    numColors(i,j)
+    setTimeout(function () {
+        cell.style.display = 'none';
+    }, 1000);
+
+    var elHint = document.querySelector(`#${gHintId}`);
+    elHint.classList.remove('bulb-light');
+    elHint.style.display = 'none';
+    clearTimeout(gHintTimeout);
+}
+
 
 
 function showLives() {
@@ -389,6 +437,31 @@ function getShowenCells() {
 }
 
 
+function resetDOM() {
+    var hint1 = document.querySelector('.bulb #hint1');
+    var hint2 = document.querySelector('.bulb #hint2');
+    var hint3 = document.querySelector('.bulb #hint3');
+    hint1.style.display ='block';
+    hint2.style.display ='block';
+    hint3.style.display ='block';
+    hint1.innerHTML = '💡';
+    hint2.innerHTML = '💡';
+    hint3.innerHTML = '💡';
+
+    console.log(hint1);
+    var msg = document.querySelector('.msg');
+    msg.innerHTML = '';
+    var livesMsg = document.querySelector('.lives');
+    livesMsg.innerText = showLives();
+    var elTimer = document.querySelector('.timer');
+    elTimer.innerHTML = 'Time: 0s';
+    var smiley = document.querySelector('.smiley');
+    smiley.innerHTML = '😊';
+    var safeClick = document.querySelector('.safe-click button');
+    safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
+}
+
+
 
 function numColors(i, j) {
     var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
@@ -412,42 +485,72 @@ function getData() {
 }
 
 
-function revealMine() {
-    if (gRevealMine !== 0) {
-        for (var i = getRandomIntInclusive(0, gBoard.length - 1); i < gBoard.length; i++) {
-            for (var j = getRandomIntInclusive(0, gBoard.length - 1); j < gBoard[i].length; j++) {
-                if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
-                    var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
-                    var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
-                    cell.style.display = 'block';
-                    gMineRevealTimeout = setTimeout(function () {
-                        cell.style.display = 'none';
-                        cellBgc.style.backgroundColor = 'white'
-                        cellBgc.style.border = '1px solid #e9e9e9';
-                    }, 1000);
-                    gRevealMine--;
-                    var safeClick = document.querySelector('.safe-click button');
-                    safeClick.innerHTML = 'Safe Click: '+gRevealMine;
-                    return;
-                }
-            }
-        }
-        clearTimeout(gMineRevealTimeout);
-    }
-}
 
 
-function setHintOn(idBtn) {
-    var elHint = document.querySelector(`#${idBtn}`);
-    elHint.classList.add('bulb-light');
-    gIsHintOn = true;
-}
-
-function revelHintCells(board, posI, poJ) {
-
-}
 
 
+
+
+
+
+
+
+// function revelHintCells(id, board, posI, posJ) {
+//     var cell = document.querySelector(`#cell-${id} span`);
+//     var cellNotSpan = document.querySelector(`#cell-${id}`);
+//     for (var i = posI - 1; i <= posI + 1; i++) {
+//         if (i < 0 || i >= board.length) continue;
+//         for (var j = posJ - 1; j <= posJ + 1; j++) {
+//             if (j < 0 || j >= board.length) continue;
+//             var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+//             var cellNotSpan = document.querySelector(`#cell-${gBoard[i][j].id}`);
+//             if (cell.innerText === '0') cell.innerText = '';
+//             cell.style.display = 'block';
+//             cellNotSpan.style.backgroundColor = '#E8F5FF';
+//             cellNotSpan.style.border = 'none';
+//             numColors(i, j);
+//             gHintTimeout = setTimeout(function () {
+//                 for (var i = posI - 1; i <= posI + 1; i++) {
+//                     if (i < 0 || i >= board.length) continue;
+//                     for (var j = posJ - 1; j <= posJ + 1; j++) {
+//                         if (j < 0 || j >= board.length) continue;
+//                         var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+//                         var cellNotSpan = document.querySelector(`#cell-${gBoard[i][j].id}`);
+//                         if (board[i][j].isShowen) {
+//                             continue;
+//                         } else {
+//                             cell.innerText = '0';
+//                             cell.style.display = 'none';
+//                             cellNotSpan.style.backgroundColor = 'white';
+//                             cellNotSpan.style.border = '1px solid #e9e9e9';
+//                         }
+//                     }
+//                 }
+//             }, 1000)
+//         }
+//     }
+//     var elHint = document.querySelector(`#${gHintId}`);
+//     elHint.classList.remove('bulb-light');
+//     elHint.style.display = 'none';
+//     clearTimeout(gHintTimeout);
+// }
+// function setHintOn(idBtn) {
+//     var elHint = document.querySelector(`#${idBtn}`);
+//     elHint.classList.add('bulb-light');
+//     gIsHintOn = true;
+// }
+// function revelHintCells(id) {
+//     var cell = document.querySelector(`#cell-${id} span`);
+//     var cellNotSpan = document.querySelector(`#cell-${id}`);
+//     if (cell.innerText !== '0') {
+//         cell.style.display = 'block';
+//         cellNotSpan.style.border = 'none';
+//         cellNotSpan.style.backgroundColor = '#E8F5FF'
+//         setTimeout(function(){
+//             cell.style.display = 'none';
+//         },1000)
+//     }
+// }
 // function revealHintCells(board,i,j){
 //     expendShowen(board,i,j);
 //     gHintInterval = setTimeout(function () {
@@ -455,7 +558,6 @@ function revelHintCells(board, posI, poJ) {
 //     }, 1000);
 //     gIsHintOn = false;
 // }
-
 // function showHintCells(id) {
 //     for (var i = 0; i < gBoard.length; i++) {
 //         for (var j = 0; j < gBoard[i].length; i++) {
@@ -465,34 +567,19 @@ function revelHintCells(board, posI, poJ) {
 //         }
 //     }
 // }
-
-
-
-
-
-
 // cellNotSpan.style.backgroundColor = '#FDF5E6';
 // cellNotSpan.style.backgroundColor = '#E8F5FF';
 // if (cell.style.display === 'none') {
 //     gGame.showCount++;
 // }
-
 // function revealCell(id) {
 //     var cell = document.querySelector(`#cell-${id} span`);
 //     cell.style.display = 'block';
 // }
-
-
-
-
-
 // if (board[i][j].minesAroundCount > 0) {
 //     cell = document.querySelector(`#cell-${id} span`);
 //     cell.style.display = 'block';
 // }
-
-
-
 //placeFlag
 // function cellMarked(elCell) {
 //     var id = elCell.slice(5, 8);
@@ -513,7 +600,6 @@ function revelHintCells(board, posI, poJ) {
 //         }
 //     }
 // }
-
 // function test(board, posI, posJ) {
 //     if (board[posI][posJ].minesAroundCount === 0) {
 //         for (var i = posI - 1; i <= posI + 1; i++) {
