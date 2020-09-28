@@ -5,6 +5,10 @@ var MINE = '💣';
 var FLAG = '🚩';
 
 
+var gHintInterval;
+var gIsHintOn;
+var gMineRevealTimeout;
+var gRevealMine;
 var gMineDeleted;
 var gTime;
 var gTimerInterval;
@@ -30,6 +34,9 @@ var gGame = {
 
 
 function initGame() {
+    clearTimeout(gMineRevealTimeout);
+    gRevealMine = 3;
+    gIsHintOn = false;
     gCellId = 101;
     gMineDeleted = 0;
     gTime = 0;
@@ -173,7 +180,6 @@ function cellClicked(elCell) {
                 }
                 gGame.showCount++;
                 gPosition = { i: i, j: j };
-
                 gBoard[i][j].isShowen = true;
                 revealCell(id);
                 checkIfWon();
@@ -182,6 +188,8 @@ function cellClicked(elCell) {
         }
     }
 }
+
+
 
 
 function revealCell(id) {
@@ -205,8 +213,7 @@ function revealCell(id) {
     }
 }
 
-// cellNotSpan.style.backgroundColor = '#FDF5E6';
-// cellNotSpan.style.backgroundColor = '#E8F5FF';
+
 function expendShowen(board, posI, posJ) {
     for (var i = posI - 1; i <= posI + 1; i++) {
         if (i < 0 || i >= board.length) continue;
@@ -317,7 +324,7 @@ function checkIfWon() {
         smiley.innerHTML = '😎';
         gGame.isOn = false;
     }
-    clearInterval(gTimerInterval)
+    clearInterval(gTimerInterval);
 }
 
 
@@ -331,6 +338,8 @@ function resetDOM() {
     elTimer.innerHTML = 'Time: 0s';
     var smiley = document.querySelector('.smiley');
     smiley.innerHTML = '😊';
+    var safeClick = document.querySelector('.safe-click button');
+    safeClick.innerHTML = 'Safe Click: ' + gRevealMine;
 }
 
 
@@ -403,13 +412,59 @@ function getData() {
 }
 
 
-
-
-function getHint(idBtn,idCell) {
-    var elHint = document.querySelector(`#${idBtn}`);
-    elHint.classList.add('bulb-light');
+function revealMine() {
+    if (gRevealMine !== 0) {
+        for (var i = getRandomIntInclusive(0, gBoard.length - 1); i < gBoard.length; i++) {
+            for (var j = getRandomIntInclusive(0, gBoard.length - 1); j < gBoard[i].length; j++) {
+                if (gBoard[i][j].isMine && !gBoard[i][j].isMarked) {
+                    var cell = document.querySelector(`#cell-${gBoard[i][j].id} span`);
+                    var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
+                    cell.style.display = 'block';
+                    gMineRevealTimeout = setTimeout(function () {
+                        cell.style.display = 'none';
+                        cellBgc.style.backgroundColor = 'white'
+                        cellBgc.style.border = '1px solid #e9e9e9';
+                    }, 1000);
+                    gRevealMine--;
+                    var safeClick = document.querySelector('.safe-click button');
+                    safeClick.innerHTML = 'Safe Click: '+gRevealMine;
+                    return;
+                }
+            }
+        }
+        clearTimeout(gMineRevealTimeout);
+    }
 }
 
+
+function setHintOn(idBtn) {
+    var elHint = document.querySelector(`#${idBtn}`);
+    elHint.classList.add('bulb-light');
+    gIsHintOn = true;
+}
+
+function revelHintCells(board, posI, poJ) {
+
+}
+
+
+// function revealHintCells(board,i,j){
+//     expendShowen(board,i,j);
+//     gHintInterval = setTimeout(function () {
+//         hideAllCells();
+//     }, 1000);
+//     gIsHintOn = false;
+// }
+
+// function showHintCells(id) {
+//     for (var i = 0; i < gBoard.length; i++) {
+//         for (var j = 0; j < gBoard[i].length; i++) {
+//             if (gIsHintOn === true) {
+//                 console.log('reveal cell now');
+//             }
+//         }
+//     }
+// }
 
 
 

@@ -1,42 +1,45 @@
-*{
+* {
     font-family: 'Roboto Slab', serif;
     font-size: 14px;
 }
 
-.level-btns{
+.level-btns {
     text-align: center;
 }
-.level-btns h3{
-    font-size:30px;
+
+.level-btns h3 {
+    font-size: 30px;
 }
-.level-btns span{
-    font-size:30px;
-    color:red;
+
+.level-btns span {
+    font-size: 30px;
+    color: red;
 }
-.level-btns button{
-    border:1px solid rgb(255, 94, 0);
-    color:rgb(255, 94, 0);
+
+.level-btns button {
+    border: 1px solid rgb(255, 94, 0);
+    color: rgb(255, 94, 0);
     background-color: transparent;
-    width:90px;
-    height:20px;
-    border-radius:2px;
+    width: 90px;
+    height: 20px;
+    border-radius: 2px;
     cursor: pointer;
     transition: 0.3s;
     outline: none;
-    font-size:12px;
-    
+    font-size: 12px;
 }
-.level-btns button:hover{
-    border:1px solid rgb(255, 94, 0);
-    color:white;
+
+.level-btns button:hover {
+    border: 1px solid rgb(255, 94, 0);
+    color: white;
     background-color: rgb(255, 94, 0);
 }
 
-.cell{
-    width:25px;
-    height:25px;
+.cell {
+    width: 25px;
+    height: 25px;
     text-align: center;
-    font-size:10px;
+    font-size: 10px;
     cursor: pointer;
 }
 
@@ -44,79 +47,100 @@
     display:none;
 } */
 
-.cell:hover{
+.cell:hover {
     background-color: rgb(238, 238, 238);
 }
-td,table{
+
+td, table {
     border-collapse: collapse;
-    border:1px solid rgb(233, 233, 233);
-    margin:0 auto;
-    margin-top:20px; 
+    border: 1px solid rgb(233, 233, 233);
+    margin: 0 auto;
+    margin-top: 20px;
     font-weight: 600;
     box-shadow: 0px 0px 15px #f0f0f0;
 }
 
-
-.msg{
+.msg {
     text-align: center;
-    margin-top:40px;
-    font-size:40px;
+    margin-top: 40px;
+    font-size: 40px;
 }
-.msg h1{
-    font-size:24px;
-    color:rgb(0, 0, 0);
+
+.msg h1 {
+    font-size: 24px;
+    color: rgb(0, 0, 0);
 }
-.msg button{
-    border:1px solid rgb(255, 0, 0);
-    color:rgb(255, 0, 0);
+
+.msg button {
+    border: 1px solid rgb(255, 0, 0);
+    color: rgb(255, 0, 0);
     background-color: transparent;
-    width:110px;
-    height:30px;
-    border-radius:2px;
+    width: 110px;
+    height: 30px;
+    border-radius: 2px;
     cursor: pointer;
     transition: 0.3s;
     outline: none;
-    font-size:18px;
+    font-size: 18px;
 }
-.msg button:hover{
-    border:1px solid rgb(255, 0, 0);
-    color:white;
+
+.msg button:hover {
+    border: 1px solid rgb(255, 0, 0);
+    color: white;
     background-color: rgb(255, 0, 0);
 }
-.timer-lives{
+
+.timer-lives {
     display: flex;
     align-items: center;
-    margin:0 auto;
+    margin: 0 auto;
     text-align: center;
-    width:200px;
+    width: 200px;
     justify-content: space-evenly;
-    margin-top:20px;
+    margin-top: 20px;
     border-radius: 3px;
 }
 
-.smiley{
-    font-size:30px;
+.smiley {
+    font-size: 30px;
 }
-.timer{
+
+.timer {
     font-size: 16px;
     font-weight: 600;
 }
-.lives{
+
+.lives {
     font-size: 16px;
     font-weight: 600;
 }
-.bulb-light{
+
+.bulb-light {
     text-shadow: 0px 0px 10px rgb(255, 0, 0);
 }
-.bulb{
-    width:100px;
-    margin:0 auto;
-    display:flex;
+
+.bulb {
+    width: 200px;
+    margin: 0 auto;
+    display: flex;
     justify-content: space-evenly;
+    align-items: center;
     text-align: center;
-    margin-top:20px;
+    margin-top: 20px;
+}
+
+#hint1, #hint2, #hint3 {
     cursor: pointer;
 }
 
-
-
+.safe-click button {
+    border: 1px solid black;
+    font-size: 12px;
+    border: none;
+    background-color: rgb(0, 0, 0);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    outline: none;
+}
