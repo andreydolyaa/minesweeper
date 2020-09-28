@@ -69,10 +69,6 @@ function buildBoard() {
             board[i][j] = cell;
         }
     }
-    // board[0][0].isMine = true;
-    // board[1][1].isMine = true;
-    // board[2][2].isMine = true;
-    // board[3][3].isMine = true;
     createMines(board);
     return board;
 }
@@ -392,12 +388,17 @@ function setHintOn(idBtn) {
 
 
 //works only with 1 cell 
-function revelHintCells(id,i,j) {
+function revelHintCells(id, i, j) {
     var cell = document.querySelector(`#cell-${id} span`);
+    var cellBgc = document.querySelector(`#cell-${id}`);
+    if (cell.innerText === '0') cell.innerText = '';
     cell.style.display = 'block';
-    numColors(i,j)
+    cellBgc.style.backgroundColor = '#E8F5FF';
+    numColors(i, j)
     setTimeout(function () {
+        cell.innerText = '0'
         cell.style.display = 'none';
+        cellBgc.style.backgroundColor = 'white'
     }, 1000);
 
     var elHint = document.querySelector(`#${gHintId}`);
@@ -441,14 +442,15 @@ function resetDOM() {
     var hint1 = document.querySelector('.bulb #hint1');
     var hint2 = document.querySelector('.bulb #hint2');
     var hint3 = document.querySelector('.bulb #hint3');
-    hint1.style.display ='block';
-    hint2.style.display ='block';
-    hint3.style.display ='block';
+    hint1.classList.remove('bulb-light');
+    hint2.classList.remove('bulb-light');
+    hint3.classList.remove('bulb-light');
+    hint1.style.display = 'block';
+    hint2.style.display = 'block';
+    hint3.style.display = 'block';
     hint1.innerHTML = '💡';
     hint2.innerHTML = '💡';
     hint3.innerHTML = '💡';
-
-    console.log(hint1);
     var msg = document.querySelector('.msg');
     msg.innerHTML = '';
     var livesMsg = document.querySelector('.lives');
