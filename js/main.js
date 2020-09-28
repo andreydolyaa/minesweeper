@@ -31,7 +31,8 @@ var gGame = {
     secsPassed: 0
 };
 
-
+//who ever is viewing this, i know i should've use classList/add/remove for the styling,
+//instead of doing it inside the js, but i realized it only at the end, sorry for the mess 
 
 function initGame() {
     clearTimeout(gHintTimeout);
@@ -391,12 +392,10 @@ function setHintOn(idBtn) {
 function revelHintCells(id, i, j) {
     var cell = document.querySelector(`#cell-${id} span`);
     var cellBgc = document.querySelector(`#cell-${id}`);
-    if (cell.innerText === '0') cell.innerText = '';
     cell.style.display = 'block';
     cellBgc.style.backgroundColor = '#E8F5FF';
     numColors(i, j)
     setTimeout(function () {
-        cell.innerText = '0'
         cell.style.display = 'none';
         cellBgc.style.backgroundColor = 'white'
     }, 1000);
