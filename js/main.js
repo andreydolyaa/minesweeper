@@ -21,8 +21,8 @@ var gPosition = {
 var gCellId;
 var gBoard;
 var gLevel = {
-    size: 4,
-    mines: 2
+    size: 8,
+    mines: 12
 };
 var gGame = {
     isOn: false,
@@ -40,7 +40,7 @@ function initGame() {
     gRevealMine = 3;
     gIsHintOn = false;
     gCellId = 101;
-    gTime = 0;
+    gTime = 1;
     gLives = 3;
     gGame.showCount = 0;
     gGame.markedCount = 0;
@@ -49,7 +49,6 @@ function initGame() {
     gBoard = buildBoard();
     createMines(gBoard);
     renderBoard(gBoard);
-    checkGameOver();
 }
 
 
@@ -100,7 +99,6 @@ function renderBoard(board) {
 
 
 function cellMarked(elCell) {
-    gTimerInterval = setInterval(timer, 1000);
     gToggle = gBoard.slice();
     var id = elCell.slice(5, 8);
     for (var i = 0; i < gBoard.length; i++) {
@@ -187,6 +185,7 @@ function cellClicked(elCell) {
                     revealCell(id);
                     checkIfWon();
                     numColors(i, j);
+                    gTimerInterval = setInterval(timer, 1000);
                 }
             }
         }
@@ -286,12 +285,13 @@ function checkGameOver() {
                     var cellBgc = document.querySelector(`#cell-${gBoard[i][j].id}`);
                     var livesMsg = document.querySelector('.lives');
                     livesMsg.innerText = showLives();
+                    var smiley = document.querySelector('.smiley');
+                        smiley.innerHTML = '🤯';
                     var mineExplore = setTimeout(function () {
                         cell.style.display = 'none';
                         cellBgc.style.backgroundColor = 'white'
                         cellBgc.style.border = '1px solid #e9e9e9';
-                        var smiley = document.querySelector('.smiley');
-                        smiley.innerHTML = '🤯';
+                        smiley.innerHTML = '😊';
                     }, 1000);
                 }
             }
@@ -310,7 +310,7 @@ function checkGameOver() {
                     cellBgc.style.border = 'none';
                     msg.innerHTML = `<h1>Game over</h1><button onclick="initGame()">restart</button>`;
                     var smiley = document.querySelector('.smiley');
-                    smiley.innerHTML = '🤯';
+                    smiley.innerHTML = '💀';
                     clearTimeout(mineExplore);
                     clearInterval(gTimerInterval);
                 }

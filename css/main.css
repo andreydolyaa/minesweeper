@@ -144,7 +144,7 @@ td, table {
     transition: 0.3s;
     outline: none;
 }
-.safe-click button:hover{
-    background-color: red;
 
+.safe-click button:hover {
+    background-color: red;
 }
